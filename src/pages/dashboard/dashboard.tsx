@@ -32,7 +32,7 @@ const Dashboard = () => {
 
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [direction, setDirection] = useState('they_owe_me'); // ADDED DIRECTION
+  const [direction, setDirection] = useState<'they_owe_me' | 'i_owe_them'>('they_owe_me'); // ADDED DIRECTION
   const [searchQuery, setSearchQuery] = useState('');
 
   // Стейтҳо барои Модали Таҳрири Корбар (Edit User)
@@ -533,7 +533,7 @@ const Dashboard = () => {
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Самти Қарз</label>
                 <select 
                   value={direction}
-                  onChange={(e) => setDirection(e.target.value)}
+                  onChange={(e) => setDirection(e.target.value as 'they_owe_me' | 'i_owe_them')}
                   className="w-full bg-gray-50 dark:bg-[#0f131c] border border-gray-200 dark:border-[#222938] rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-slate-200 focus:outline-none focus:border-[#8faeff]"
                 >
                   <option value="they_owe_me">Онҳо ба ман қарздоранд (Ман додам)</option>

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { FiX, FiCheckCircle, FiChevronRight, FiDownload, FiTrash2, FiCamera } from 'react-icons/fi';
+import { FiCheckCircle, FiChevronRight, FiDownload, FiTrash2, FiCamera } from 'react-icons/fi';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Profile = () => {
   }, [user, isAuthenticated, navigate]);
 
  
-  const handleSave = async (e) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ text: '', type: '' });
@@ -60,7 +60,7 @@ const Profile = () => {
       
 
       if (getMe) await getMe();
-    } catch (error) {
+    } catch (error: any) {
       setMessage({ text: error?.response?.data?.message || 'Хатогӣ ҳангоми сабт!', type: 'error' });
     } finally {
       setLoading(false);

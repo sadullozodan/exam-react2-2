@@ -1,18 +1,36 @@
 import { create } from 'zustand';
 import { axiosRequest } from './authStore';
 
-export const useDebtStore = create((set, get) => ({
+interface Debt {
+  id: string;
+  contact_id?: string;
+  name?: string;
+  amount?: string | number;
+  currency?: string;
+  avatar?: string;
+}
+
+interface DebtState {
+  debts: Debt[];
+  loading: boolean;
+  fetchDebts: () => Promise<void>;
+  addDebt: (newDebt: any) => Promise<void>;
+  updateDebt: (id: string, updatedData: any) => Promise<void>;
+  deleteDebt: (id: string) => Promise<void>;
+  addPayment: (payment: any) => Promise<void>;
+  remindDebtor: (name: string) => void;
+}
+
+export const useDebtStore = create<DebtState>((set, get) => ({
   debts: [],
   loading: false,
 
   fetchDebts: async () => {
     set({ loading: true });
     try {
-      // In this project they used dashboard/summary to get upcoming_due 
-      // but in the actual debts endpoint we use /debt-requests or /debts
       const { data } = await axiosRequest.get(`/dashboard/summary`);
       
-      const debts = (data.upcoming_due || []).map((d: any) => ({
+      const debts: Debt[] = (data?.upcoming_due || []).map((d: any) => ({
         id: d.id,
         contact_id: d.contact_id,
         name: d.contact_name,
@@ -52,7 +70,7 @@ export const useDebtStore = create((set, get) => ({
 
   updateDebt: async (id: string, updatedData: any) => {
     try {
-      const debtor = get().debts.find((d: any) => String(d.id) === String(id));
+      const debtor = get().debts.find((d: Debt) => String(d.id) === String(id));
       if (updatedData.name && debtor && debtor.contact_id) {
         await axiosRequest.patch(`/contacts/${debtor.contact_id}`, { name: updatedData.name });
       }

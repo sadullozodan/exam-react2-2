@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDashboardStore } from '../dashboard/useDashboard'; 
-import { useState } from 'react';
 import { FiArrowLeft, FiCalendar, FiX, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { BiWallet, BiHistory } from 'react-icons/bi';
 
@@ -20,22 +20,23 @@ const DebtorProfile = () => {
 
   const debtor = debtors.find((d) => String(d.id) === String(id));
 
-  // Тӯловҳои ҳамин корбар
-  const debtorPayments = recentPayments.filter(
-    (p) => p.name.toLowerCase() === debtor?.name?.toLowerCase()
-  );
+  // Тӯловҳои ҳамин корбар (бехатар бо шарт)
+  const debtorPayments = debtor
+    ? recentPayments.filter((p) => String(p.name || '').toLowerCase() === String(debtor.name || '').toLowerCase())
+    : [];
 
   // Ҳолатҳо (States) барои модалҳо ва инпутҳо
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
     
-  const [editName, setEditName] = useState(debtor?.name || '');
-  const [editAmount, setEditAmount] = useState(debtor?.amount || '');
-  const [paymentAmount, setPaymentAmount] = useState('');
+  const [editName, setEditName] = useState<string>(debtor?.name || '');
+  const [editAmount, setEditAmount] = useState<string>(String(debtor?.amount || ''));
+  const [paymentAmount, setPaymentAmount] = useState<string>('');
 
   // 1. Амал барои нест кардани қарздор (Delete)
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(`Оё мехоҳед "${debtor?.name}"-ро аз рӯйхат нест кунед?`);
+    if (!debtor) return;
+    const confirmDelete = window.confirm(`Оё мехоҳед "${debtor.name}"-ро аз рӯйхат нест кунед?`);
     if (confirmDelete) {
       await deleteDebtor(debtor.id);
       navigate('/dashboard'); // Баъди удол кадан ба саҳифаи асосӣ бармегардад
@@ -43,8 +44,9 @@ const DebtorProfile = () => {
   };
 
   // 2. Амал барои таҳрир кардани маълумот (Edit)
-  const handleEditSubmit = async (e) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!debtor) return;
     if (!editName || !editAmount) return;
 
     await updateDebtor(debtor.id, { name: editName, amount: editAmount });
@@ -52,16 +54,15 @@ const DebtorProfile = () => {
   };
 
   // 3. Амал барои илова кардани тӯлов (Add Payment)
-  const handlePaymentSubmit = async (e) => {
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!debtor) return;
     if (!paymentAmount || Number(paymentAmount) <= 0) return;
 
-  
-    const currentDebt = parseFloat(debtor.amount);
+    const currentDebt = parseFloat(String(debtor.amount));
     const payValue = parseFloat(paymentAmount);
     const newAmount = Math.max(0, currentDebt - payValue);
 
-  
     await updateDebtor(debtor.id, { ...debtor, amount: `${newAmount}` });
     
     if (typeof addPayment === 'function') {
@@ -81,7 +82,8 @@ const DebtorProfile = () => {
 
 
   const handleCloseDebt = async () => {
-    const confirmClose = window.confirm(`Оё боварӣ доред, ки қарзи ${debtor?.name} пурра пӯшида шуд?`);
+    if (!debtor) return;
+    const confirmClose = window.confirm(`Оё боварӣ доред, ки қарзи ${debtor.name} пурра пӯшида шуд?`);
     if (confirmClose) {
       await updateDebtor(debtor.id, { ...debtor, amount: '0' });
     }
@@ -128,9 +130,9 @@ const DebtorProfile = () => {
           </span>
 
           {/* ТУГМАҲОИ EDIT ВА DELETE УД ПАСТ РАСМ */}
-          <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-4">
             <button 
-              onClick={() => { setEditName(debtor.name); setEditAmount(parseFloat(debtor.amount)); setIsEditModalOpen(true); }}
+              onClick={() => { setEditName(debtor.name); setEditAmount(String(parseFloat(String(debtor.amount)))); setIsEditModalOpen(true); }}
               className="flex items-center gap-1 bg-[#1e2433] hover:bg-[#252f42] text-xs text-slate-800 dark:text-slate-300 px-3 py-1.5 rounded-lg border border-[#2c354a] transition"
             >
               <FiEdit2 className="w-3.5 h-3.5 text-amber-500" /> Edit
