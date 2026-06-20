@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BiHistory, BiWallet } from 'react-icons/bi';
 import { FiBell, FiEdit2, FiFileText, FiGrid, FiPlus, FiSearch, FiTrash2, FiUserCheck, FiUsers, FiX } from 'react-icons/fi';
 import { MdTrendingDown, MdTrendingUp } from 'react-icons/md';
@@ -7,7 +7,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { useAuthStore } from '../../store/authStore';
 import { useDashboardStore } from './useDashboard';
 
-const CustomTooltip = ({ active, payload }) => {
+const CustomTooltip: React.FC<{ active?: boolean; payload?: any[] }> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white dark:bg-[#161b26] border border-gray-200 dark:border-[#222938] p-2.5 rounded-xl shadow-2xl">
@@ -36,8 +36,8 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Стейтҳо барои Модали Таҳрири Корбар (Edit User)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editRole, setEditRole] = useState('Admin');
@@ -59,7 +59,7 @@ const Dashboard = () => {
     navigate('/login');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !amount) return;
 
@@ -72,7 +72,7 @@ const Dashboard = () => {
   };
 
   // Функсияи кушодани модали таҳрир
-  const openEditModal = (u) => {
+  const openEditModal = (u: any) => {
     setEditingUser(u);
     setEditName(u.name || '');
     setEditEmail(u.email || '');
@@ -81,7 +81,7 @@ const Dashboard = () => {
   };
 
   // Сабти тағйироти корбар дар бэкенд
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (updateUser) {
       updateUser(editingUser.id, { name: editName, email: editEmail, role: editRole });
@@ -92,7 +92,7 @@ const Dashboard = () => {
   };
 
   // Нест кардани корбар аз бэкенд
-  const handleDeleteUser = (userId) => {
+  const handleDeleteUser = (userId: string) => {
     if (window.confirm("Шумо дар ҳақиқат мехоҳед ин корбарро нест кунед?")) {
       if (deleteUser) {
         deleteUser(userId);
@@ -356,7 +356,7 @@ const Dashboard = () => {
             <p className="text-xs text-slate-500 dark:text-slate-500 dark:text-slate-500 mb-6">Manage roles and permissions for secondary administrative panels.</p>
             
             <div className="space-y-3">
-              {displayUsers.map((u) => (
+              {displayUsers.map((u: any) => (
                 <div key={u.id} className="bg-gray-50 dark:bg-[#0f131c] border border-gray-200 dark:border-[#1e2533] rounded-xl p-4 flex items-center justify-between hover:border-[#222938] transition">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-[#1e293b] flex items-center justify-center text-xs font-bold text-[#8faeff]">

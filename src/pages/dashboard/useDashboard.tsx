@@ -35,6 +35,10 @@ export interface PaymentData {
   debt_id?: string;
   amount: string | number;
   note?: string;
+  name?: string;
+  time?: string;
+  color?: string;
+  type?: string;
 }
 
 export interface ChartDataPoint {
@@ -77,6 +81,10 @@ export interface DashboardState {
   remindDebtor: (name: string) => void;
   
   chartData: ChartDataPoint[];
+  // Optional workspace user management (some pages expect these)
+  updateUser?: (id: string, data: { name?: string; email?: string; role?: string }) => Promise<void> | void;
+  deleteUser?: (id: string) => Promise<void> | void;
+  workspaceUsers?: Array<{ id: string; name?: string; email?: string; role?: string }>;
 }
 
 export const useDashboardStore = create<DashboardState>((set, get) => ({
